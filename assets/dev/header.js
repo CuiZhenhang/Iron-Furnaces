@@ -127,11 +127,12 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
     })
     if (minY < 0) {
         let drawing = mainGui.getContent().drawing
-        drawing[0].y -= minY
-        drawing[1].y -= minY
+        for (let i = 0; i < drawing.length; i++) drawing[i].y -= minY
         for (let key in elements) elements[key].y -= minY
-        gui.getContent().standard.minHeight -= minY
+        minHeight -= minY
+        gui.getContent().standard.minHeight = minHeight
     }
+    gui.refreshAll()
     return {
         gui: gui,
         interface: {

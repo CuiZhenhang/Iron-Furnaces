@@ -6,7 +6,8 @@ LIBRARY({
     name: 'CustomFurnaces',
     version: 1, // alpha
     api: 'CoreEngine',
-    shared: true
+    shared: true,
+    dependencies: ['StorageInterface']
 })
 
 IMPORT('StorageInterface')
@@ -54,10 +55,13 @@ let CustomFurnaces = {
             data: null
         },
         __invalidateData () {
-            this.networkData.putBoolean('__active', this.data.__isActive)
-            this.networkData.sendChanges()
+            if (this.data.__isActive !== Boolean(this.networkData.getBoolean('__active'))) {
+                this.networkData.putBoolean('__active', this.data.__isActive)
+                this.networkData.sendChanges()
+            }
             this.container.setScale(this.__cache.data.burn, this.data.__burningMax ? this.data.burning / this.data.__burningMax : 0)
             this.container.setScale(this.__cache.data.progress, this.data.__progress / CustomFurnaces.fullProgress)
+            this.container.sendChanges()
         },
         __dropXP () {
             if (this.data.__storedXP > 0) {

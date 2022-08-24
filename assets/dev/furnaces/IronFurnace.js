@@ -1,6 +1,6 @@
 /// <reference path='../upgrades.js'/>
 
-let ironFurnaceWindow = createFurnaceWindow(Translation.translate('Iron Furnace'), 2, 2, 2)
+let ironFurnaceWindow = createFurnaceWindow(Translation.translate('Iron Furnace'), 20, 40, 20)
 
 createFurnace({
     nameId: 'ifIronFurnace',

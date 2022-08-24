@@ -1,6 +1,12 @@
 header.js
 translation.js
 upgrades.js
+furnaces/CopperFurnace.js
+furnaces/CrystalFurnace.js
+furnaces/DiamondFurnace.js
+furnaces/GoldFurnace.js
 furnaces/IronFurnace.js
+furnaces/ObsidianFurnace.js
+furnaces/SilverFurnace.js
 recipes.js
 share.js

@@ -10,15 +10,15 @@ IMPORT('TileRender')
 
 /**
  * @param { string } title 
- * @param { Array<[x: number, y: number]> | number } input O(burn[0], burn[1]-60) X(-60) Y(-60)
+ * @param { Array<[x: number, y: number]> | number } input O(burn[0], burn[1]-70) X(-60) Y(-60)
  * @param { Array<[x: number, y: number]> | number } output O(burn[0]+160, burn[1]) X(60) Y(60)
- * @param { Array<[x: number, y: number]> | number } fuel O(burn[0], burn[1]+60) X(-60) Y(60)
+ * @param { Array<[x: number, y: number]> | number } fuel O(burn[0], burn[1]+70) X(-60) Y(60)
  * @param { [absoluteX: number, absoluteY: number] = } burn 
  * @returns { {gui: UI.StandardWindow, interface: FurnaceDescriptor} }
  */
 function createFurnaceWindow(title, input, output, fuel, burn) {
-    if (!burn) burn = [400, 310]
-    let minHeight = (burn[1] + 60) + 40
+    if (!burn) burn = [420, 250]
+    let minHeight = burn[1] + 70
     if (typeof input === 'number') {
         let size = input
         input = []
@@ -27,16 +27,16 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
         }
     }
     if (typeof output === 'number') {
-        let size = fuel
+        let size = output
         output = []
         let deltaY = -Math.floor((size - 1) / 5) / 2 // 0.5 - (Math.floor((size - 1) / 5) + 1) / 2
-        if (burn[1] + deltaY * 60 < 100) {
-            deltaY += Math.ceil((100 - (burn[1] + deltaY * 60)) / 30) / 2
+        if (burn[1] + deltaY * 60 < 0) {
+            deltaY += Math.ceil((-(burn[1] + deltaY * 60)) / 30) / 2
         }
         for (let index = 0; index < size; index++) {
             output.push([index % 5, Math.floor(index / 5) + deltaY])
         }
-        minHeight = Math.max(minHeight, ((burn[1]) + output[size - 1][1] * 60 + 60) + 40)
+        minHeight = Math.max(minHeight, (burn[1]) + output[size - 1][1] * 60 + 60)
     }
     if (typeof fuel === 'number') {
         let size = fuel
@@ -44,7 +44,7 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
         for (let index = 0; index < size; index++) {
             fuel.push([index % 5, Math.floor(index / 5)])
         }
-        minHeight = Math.max(minHeight, ((burn[1] + 60) + fuel[size - 1][1] * 60 + 60) + 40)
+        minHeight = Math.max(minHeight, (burn[1] + 70) + fuel[size - 1][1] * 60 + 60)
     }
     let gui = new UI.StandardWindow({
         standard: {
@@ -104,7 +104,7 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
     })
     let elements = gui.getContent().elements
     let basePos = [burn[0], burn[1]]
-    basePos = [burn[0], burn[1] - 60]
+    basePos = [burn[0], burn[1] - 70]
     input.forEach(function (pos, index) {
         elements['input' + index] = {
             type: 'slot',
@@ -122,7 +122,7 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
             size: 60
         }
     })
-    basePos = [burn[0], burn[1] + 60]
+    basePos = [burn[0], burn[1] + 70]
     fuel.forEach(function (pos, index) {
         elements['fuel' + index] = {
             type: 'slot',

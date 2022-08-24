@@ -17,24 +17,22 @@ IMPORT('TileRender')
  * @returns { {gui: UI.StandardWindow, interface: FurnaceDescriptor} }
  */
 function createFurnaceWindow(title, input, output, fuel, burn) {
+    const slotPerRow = 7
     if (!burn) burn = [420, 250]
     let minHeight = burn[1] + 70
     if (typeof input === 'number') {
         let size = input
         input = []
         for (let index = 0; index < size; index++) {
-            input.push([index % 5, Math.floor(index / 5)])
+            input.push([index % slotPerRow, Math.floor(index / slotPerRow)])
         }
     }
     if (typeof output === 'number') {
         let size = output
         output = []
-        let deltaY = -Math.floor((size - 1) / 5) / 2 // 0.5 - (Math.floor((size - 1) / 5) + 1) / 2
-        if (burn[1] + deltaY * 60 < 0) {
-            deltaY += Math.ceil((-(burn[1] + deltaY * 60)) / 30) / 2
-        }
+        let deltaY = -Math.floor((size - 1) / slotPerRow) / 2 // 0.5 - (Math.floor((size - 1) / slotPerRow) + 1) / 2
         for (let index = 0; index < size; index++) {
-            output.push([index % 5, Math.floor(index / 5) + deltaY])
+            output.push([index % slotPerRow, Math.floor(index / slotPerRow) + deltaY])
         }
         minHeight = Math.max(minHeight, (burn[1]) + output[size - 1][1] * 60 + 60)
     }
@@ -42,7 +40,7 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
         let size = fuel
         fuel = []
         for (let index = 0; index < size; index++) {
-            fuel.push([index % 5, Math.floor(index / 5)])
+            fuel.push([index % slotPerRow, Math.floor(index / slotPerRow)])
         }
         minHeight = Math.max(minHeight, (burn[1] + 70) + fuel[size - 1][1] * 60 + 60)
     }
@@ -102,35 +100,38 @@ function createFurnaceWindow(title, input, output, fuel, burn) {
             }
         }
     })
-    let elements = gui.getContent().elements
+    let mainGui = gui.getWindow('main')
+    let elements = mainGui.getContent().elements
+    let minY = 0
     let basePos = [burn[0], burn[1]]
     basePos = [burn[0], burn[1] - 70]
     input.forEach(function (pos, index) {
-        elements['input' + index] = {
-            type: 'slot',
-            x: basePos[0] + (-60) * pos[0],
-            y: basePos[1] + (-60) * pos[1],
-            size: 60
-        }
+        let x = basePos[0] + (-60) * pos[0]
+        let y = basePos[1] + (-60) * pos[1]
+        elements['input' + index] = { type: 'slot', x: x, y: y, size: 60 }
+        if (y < minY) minY = y
     })
     basePos = [burn[0] + 160, burn[1]]
     output.forEach(function (pos, index) {
-        elements['output' + index] = {
-            type: 'slot',
-            x: basePos[0] + (60) * pos[0],
-            y: basePos[1] + (60) * pos[1],
-            size: 60
-        }
+        let x = basePos[0] + (60) * pos[0]
+        let y = basePos[1] + (60) * pos[1]
+        elements['output' + index] = { type: 'slot', x: x, y: y, size: 60 }
+        if (y < minY) minY = y
     })
     basePos = [burn[0], burn[1] + 70]
     fuel.forEach(function (pos, index) {
-        elements['fuel' + index] = {
-            type: 'slot',
-            x: basePos[0] + (-60) * pos[0],
-            y: basePos[1] + (60) * pos[1],
-            size: 60
-        }
+        let x = basePos[0] + (-60) * pos[0]
+        let y = basePos[1] + (60) * pos[1]
+        elements['fuel' + index] = { type: 'slot', x: x, y: y, size: 60 }
+        if (y < minY) minY = y
     })
+    if (minY < 0) {
+        let drawing = mainGui.getContent().drawing
+        drawing[0].y -= minY
+        drawing[1].y -= minY
+        for (let key in elements) elements[key].y -= minY
+        gui.getContent().standard.minHeight -= minY
+    }
     return {
         gui: gui,
         interface: {

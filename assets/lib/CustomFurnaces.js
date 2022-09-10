@@ -2,6 +2,8 @@
 /// <reference path='../declarations/StorageInterface.d.ts'/>
 /// <reference path='../declarations/CustomFurnaces.d.ts'/>
 
+// Copyright (c) 2022 CuiZhenhang (github.com/CuiZhenhang)
+
 LIBRARY({
     name: 'CustomFurnaces',
     version: 1, // alpha
@@ -91,35 +93,6 @@ let CustomFurnaces = {
         },
         tick () {
             StorageInterface.checkHoppers(this)
-            /** @type { FurnaceDescriptor } */
-            let furnaceData = this.__cache.data
-            /** @type { ItemContainer } */
-            let container = this.container
-            if (this.__cache.inputIndex >= 0) {
-                let slot = container.getSlot(furnaceData.inputSlot[this.__cache.inputIndex])
-                if (!slot || slot.id === 0) this.__cache.inputIndex = -1
-            }
-            if (this.__cache.inputIndex < 0) {
-                for (let index = 0; index < furnaceData.inputSlot.length; index++) {
-                    let slot = container.getSlot(furnaceData.inputSlot[index])
-                    if (!slot || slot.id === 0) continue
-                    if (!CustomFurnaces.getRecipeResult(this, slot.id, slot.data)) continue
-                    this.__cache.inputIndex = index
-                    break
-                }
-            }
-            if (this.__cache.outputIndex >= 0) {
-                let slot = container.getSlot(furnaceData.outputSlot[this.__cache.outputIndex])
-                if (!slot || slot.id !== 0) this.__cache.outputIndex = -1
-            }
-            if (this.__cache.outputIndex < 0) {
-                for (let index = 0; index < furnaceData.outputSlot.length; index++) {
-                    let slot = container.getSlot(furnaceData.outputSlot[index])
-                    if (!slot || slot.id !== 0) continue
-                    this.__cache.outputIndex = index
-                    break
-                }
-            }
         },
         destroyBlock (coords, player) {
             if (this.data.__storedXP > 0) this.__dropXP()
@@ -223,30 +196,51 @@ let CustomFurnaces = {
         return result
     },
     process (tileEntity, progress, burn) {
-        if (typeof burn === 'undefined') burn = 1
         if (typeof progress === 'number') progress = { succeed: progress, fail: -2 * progress }
+        if (typeof burn === 'undefined') burn = progress.succeed
         if (progress.succeed < 0) progress.succeed = 0
         if (progress.fail > 0) progress.fail = 0
+        /** @type { FurnaceDescriptor } */
+        let furnaceData = tileEntity.__cache.data
+        /** @type { ItemContainer } */
+        let container = tileEntity.container
+        if (tileEntity.__cache.inputIndex >= 0) {
+            let slot = container.getSlot(furnaceData.inputSlot[tileEntity.__cache.inputIndex])
+            if (!slot || slot.id === 0) tileEntity.__cache.inputIndex = -1
+        }
+        if (tileEntity.__cache.inputIndex < 0) {
+            for (let index = 0; index < furnaceData.inputSlot.length; index++) {
+                let slot = container.getSlot(furnaceData.inputSlot[index])
+                if (!slot || slot.id === 0) continue
+                if (!this.getRecipeResult(tileEntity, slot.id, slot.data)) continue
+                tileEntity.__cache.inputIndex = index
+                break
+            }
+        }
+        if (tileEntity.__cache.outputIndex >= 0) {
+            let slot = container.getSlot(furnaceData.outputSlot[tileEntity.__cache.outputIndex])
+            if (!slot || slot.id !== 0) tileEntity.__cache.outputIndex = -1
+        }
+        if (tileEntity.__cache.outputIndex < 0) {
+            for (let index = 0; index < furnaceData.outputSlot.length; index++) {
+                let slot = container.getSlot(furnaceData.outputSlot[index])
+                if (!slot || slot.id !== 0) continue
+                tileEntity.__cache.outputIndex = index
+                break
+            }
+        }
         let slotSucc = false
         if (tileEntity.__cache.inputIndex >= 0) {
             if (tileEntity.__cache.outputIndex >= 0) slotSucc = true
             else {
-                /** @type { FurnaceDescriptor } */
-                let furnaceData = tileEntity.__cache.data
-                /** @type { {[key: `${number}:${number}`]: Array<Nullable<ItemExtraData>>} } */
+                /** @type { {[key: `${number}:${number}`]: boolean} } */
                 let resultObj = {}
-                /** @type { ItemContainer } */
-                let container = tileEntity.container
                 for (let index = 0; index < furnaceData.inputSlot.length; index++) {
                     let slot = container.getSlot(furnaceData.inputSlot[index])
                     if (!slot || slot.id === 0) continue
                     let result = this.getRecipeResult(tileEntity, slot.id, slot.data)
                     let key = result.id + ':' + Math.max(result.data, 0)
-                    if (!resultObj[key]) resultObj[key] = []
-                    if (!result.extra || result.extra.isEmpty()) {
-                         if (resultObj[key].indexOf(null) >= 0) continue
-                         resultObj[key].push(null)
-                    } else resultObj[key].push(result.extra)
+                    if (!resultObj[key]) resultObj[key] = true
                 }
                 for (let index = 0; index < furnaceData.outputSlot.length; index++) {
                     let slot = container.getSlot(furnaceData.outputSlot[index])
@@ -256,18 +250,10 @@ let CustomFurnaces = {
                         break
                     }
                     if (slot.count >= Item.getMaxStack(slot.id)) continue
-                    let arr = resultObj[slot.id + ':' + slot.data]
-                    if (!arr) continue
-                    if (slot.extra && !slot.extra.isEmpty()) {
-                        if (arr.some(function (extra) { return slot.extra.equals(extra) })) {
-                            slotSucc = true
-                            break
-                        }
-                    } else {
-                        if (arr.indexOf(null) >= 0) {
-                            slotSucc = true
-                            break
-                        }
+                    if (slot.extra && !slot.extra.isEmpty()) continue
+                    if (resultObj[slot.id + ':' + slot.data]) {
+                        slotSucc = true
+                        break
                     }
                 }
             }
@@ -359,30 +345,23 @@ let CustomFurnaces = {
                 let inputCount = inputSlot.count
                 let result = this.getRecipeResult(tileEntity, inputSlot.id, inputSlot.data)
                 if (!result) continue
-                let resultData = Math.max(result.data, 0), count = result.count, maxStack = Item.getMaxStack(result.id)
+                let resultData = Math.max(result.data, 0), maxStack = Item.getMaxStack(result.id)
                 for (let outputIndex = 0; outputIndex < furnaceData.outputSlot.length; outputIndex++) {
                     let outputSlot = container.getSlot(furnaceData.outputSlot[outputIndex])
                     if (!outputSlot) return
                     if (outputSlot.id !== 0 && (outputSlot.id !== result.id || outputSlot.data !== resultData || outputSlot.count >= maxStack)) continue
-                    if (outputSlot.extra && !outputSlot.extra.isEmpty() && !outputSlot.extra.equals(result.extra)) continue
-                    let newSlotCount = (outputSlot.id === 0 ? 0 : outputSlot.count) + count
-                    if (newSlotCount > maxStack) newSlotCount = maxStack
-                    count -= newSlotCount - outputSlot.count
-                    outputSlot.setSlot(result.id, newSlotCount, resultData, result.extra || null)
-                    if (count <= 0) {
-                        --times
-                        inputSlot.setSlot(inputSlot.id, --inputCount, inputSlot.data, inputSlot.extra)
-                        let xp = this.averageXP
-                        tileData.__storedXP += Math.floor(xp)
-                        if (Math.random() < xp % 1) tileData.__storedXP++
-                        if (inputCount <= 0) break
-                        if (times <= 0) break
-                        --outputIndex
-                    }
+                    if (outputSlot.extra && !outputSlot.extra.isEmpty()) continue
+                    let count = Math.min(times, inputCount, maxStack - outputSlot.count)
+                    times -= count
+                    inputCount -= count
+                    outputSlot.setSlot(result.id, (outputSlot.id === 0 ? 0 : outputSlot.count) + count, resultData)
+                    let xp = this.averageXP * count
+                    tileData.__storedXP += Math.floor(xp)
+                    if (Math.random() < xp % 1) tileData.__storedXP++
+                    if (times <= 0 || inputCount <= 0) break
                 }
-                if (0 < count && count < result.count) {
-                    --times
-                    tileEntity.blockSource.spawnDroppedItem(tileEntity.x + 0.5, tileEntity.y + 1, tileEntity.z + 0.5, result.id, count, resultData, result.extra)
+                if (inputCount !== inputSlot.count) {
+                    inputSlot.setSlot(inputSlot.id, inputCount, inputSlot.data, inputSlot.extra)
                 }
             }
             container.validateAll()

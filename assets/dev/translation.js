@@ -1,1 +1,18 @@
 /// <reference path='./header.js'/>
+
+Translation.addTranslation('Stone to Copper Furnace Upgrade', { zh_CN: '熔炉升级：石>铜' })
+Translation.addTranslation('Stone to Iron Furnace Upgrade', { zh_CN: '熔炉升级：石>铁' })
+Translation.addTranslation('Copper to Iron Furnace Upgrade', { zh_CN: '熔炉升级：铜>铁' })
+Translation.addTranslation('Copper to Silver Furnace Upgrade', { zh_CN: '熔炉升级：铜>银' })
+Translation.addTranslation('Iron to Gold Furnace Upgrade', { zh_CN: '熔炉升级：铁>金' })
+Translation.addTranslation('Silver to Gold Furnace Upgrade', { zh_CN: '熔炉升级：银>金' })
+Translation.addTranslation('Gold to Diamond Furnace Upgrade', { zh_CN: '熔炉升级：金>钻石' })
+Translation.addTranslation('Diamond to Crystal Furnace Upgrade', { zh_CN: '熔炉升级：钻石>水晶' })
+Translation.addTranslation('Diamond to Obsidian Furnace Upgrade', { zh_CN: '熔炉升级：钻石>黑曜石' })
+Translation.addTranslation('Copper Furnace', { zh_CN: '铜熔炉' })
+Translation.addTranslation('Iron Furnace', { zh_CN: '铁熔炉' })
+Translation.addTranslation('Silver Furnace', { zh_CN: '银熔炉' })
+Translation.addTranslation('Gold Furnace', { zh_CN: '金熔炉' })
+Translation.addTranslation('Diamond Furnace', { zh_CN: '钻石熔炉' })
+Translation.addTranslation('Crystal Furnace', { zh_CN: '水晶熔炉' })
+Translation.addTranslation('Obsidian Furnace', { zh_CN: '黑曜石熔炉' })

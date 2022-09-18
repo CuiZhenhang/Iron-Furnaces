@@ -5,8 +5,46 @@
 /// <reference path='./share.js'/>
 
 IMPORT('CustomFurnaces')
+IMPORT('StorageInterface')
 IMPORT('VanillaSlots')
 IMPORT('TileRender')
+
+/**
+ * @typedef { {\
+ *   input: number, output: number, fuel: number,\
+ *   succeed: number, fail: number, burn: number\
+ * } } furnaceDescription
+ * @param { string } prefix 
+ * @returns { furnaceDescription }
+ */
+function getFurnaceDesc(prefix) {
+    /** @type { furnaceDescription } */
+    let ret =  {
+        input: Number(__config__.getInteger(prefix + '.input')),
+        output: Number(__config__.getInteger(prefix + '.output')),
+        fuel: Number(__config__.getInteger(prefix + '.fuel')),
+        succeed: Number(__config__.getDouble(prefix + '.succeed')),
+        fail: Number(__config__.getDouble(prefix + '.fail')),
+        burn: Number(__config__.getDouble(prefix + '.burn'))
+    }
+    if (isNaN(ret.input) || ret.input < 1) ret.input = 1
+    if (isNaN(ret.output) || ret.output < 1) ret.output = 1
+    if (isNaN(ret.fuel) || ret.fuel < 1) ret.fuel = 1
+    if (isNaN(ret.succeed)) ret.succeed = 0
+    if (isNaN(ret.fail)) ret.fail = 0
+    if (isNaN(ret.burn)) ret.burn = 0
+    return ret
+}
+
+const FurnaceDesc = {
+    copper: getFurnaceDesc('copper'),
+    crystal: getFurnaceDesc('crystal'),
+    diamond: getFurnaceDesc('diamond'),
+    gold: getFurnaceDesc('gold'),
+    iron: getFurnaceDesc('iron'),
+    obsidian: getFurnaceDesc('obsidian'),
+    silver: getFurnaceDesc('silver')
+}
 
 /**
  * @param { string } title 
@@ -15,10 +53,10 @@ IMPORT('TileRender')
  * @param { Array<[x: number, y: number]> | number } fuel X(-) Y(+)
  * @param { number = } slotSize 
  * @param { [absoluteX: number, absoluteY: number] = } burn 
- * @returns { {gui: UI.StandardWindow, interface: FurnaceDescriptor} }
+ * @returns { {gui: UI.StandardWindow, descriptor: FurnaceDescriptor} }
  */
 function createFurnaceWindow(title, input, output, fuel, slotSize, burn) {
-    if (!slotSize) slotSize = 60
+    if (!slotSize) slotSize = 70
     if (!burn) burn = [500, 250]
     let slotSizePer60 = slotSize / 60
     let basePos = [burn[0], burn[1]]
@@ -158,7 +196,7 @@ function createFurnaceWindow(title, input, output, fuel, slotSize, burn) {
             drawing: drawing,
             elements: elements
         }),
-        interface: {
+        descriptor: {
             inputSlot: ['input^0-' + String(input.length - 1)],
             outputSlot: ['output^0-' + String(output.length - 1)],
             fuelSlot: ['fuel^0-' + String(fuel.length - 1)],
@@ -175,7 +213,7 @@ function createFurnaceWindow(title, input, output, fuel, slotSize, burn) {
  * @param { {top: [string, number], bottom: [string, number], side: [string, number], frontOff: [string, number], frontOn: [string, number]} } param.texture 
  * @param { string | Block.SpecialType } param.blockType 
  * @param { UI.StandardWindow } param.gui 
- * @param { FurnaceDescriptor } param.interface 
+ * @param { FurnaceDescriptor } param.descriptor 
  * @param { TileEntity.TileEntityPrototype } param.customPrototype 
  */
 function createFurnace(param) {
@@ -238,13 +276,11 @@ function createFurnace(param) {
                 } else {
                     BlockRenderer.unmapAtCoords(this.x, this.y, this.z)
                 }
-            },
-            unload() {
-                BlockRenderer.unmapAtCoords(this.x, this.y, this.z)
             }
         }
     })
     CustomFurnaces.registerTileEntity(id, param.customPrototype)
-    CustomFurnaces.createFurnaceInterface(id, param.interface)
+    let storageDescriptor = CustomFurnaces.createFurnaceInterface(id, param.descriptor)
+    StorageInterface.createInterface(id, storageDescriptor)
     VanillaSlots.registerForTile(id, param.gui)
 }

@@ -84,7 +84,6 @@ function upgradeVanillaFurnace (coords, furnaceId, player) {
 }
 
 Callback.addCallback('ItemUse', function (coords, item, block, isExternal, player) {
-    if (!Entity.getSneaking(player)) return
     if (block.id !== VanillaTileID.furnace && block.id !== VanillaTileID.lit_furnace) return
     switch (item.id) {
         case ItemID.ifStoneCopperUpgrade: {

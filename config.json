@@ -1,3 +1,60 @@
 {
-  "enabled": true
+  "enabled": true,
+  "showConfig": true,
+  "copper": {
+    "input": 1,
+    "output": 2,
+    "fuel": 1,
+    "succeed": 1.112,
+    "fail": 2.223,
+    "burn": 1.112
+  },
+  "crystal": {
+    "input": 10,
+    "output": 20,
+    "fuel": 10,
+    "succeed": 10,
+    "fail": 0,
+    "burn": 5
+  },
+  "diamond": {
+    "input": 10,
+    "output": 20,
+    "fuel": 10,
+    "succeed": 10,
+    "fail": 0,
+    "burn": 5
+  },
+  "gold": {
+    "input": 5,
+    "output": 10,
+    "fuel": 5,
+    "succeed": 4,
+    "fail": 2,
+    "burn": 2.5
+  },
+  "iron": {
+    "input": 2,
+    "output": 3,
+    "fuel": 2,
+    "succeed": 1.25,
+    "fail": 2.5,
+    "burn": 1.25
+  },
+  "obsidian": {
+    "input": 10,
+    "output": 20,
+    "fuel": 10,
+    "succeed": 10,
+    "fail": 0,
+    "burn": 5
+  },
+  "silver": {
+    "input": 3,
+    "output": 5,
+    "fuel": 3,
+    "succeed": 1.5,
+    "fail": 1.5,
+    "burn": 1.25
+  }
 }

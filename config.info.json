@@ -1,0 +1,35 @@
+{
+  "properties": {
+    "showConfig": {
+      "displayIf": false
+    },
+    "copper": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    },
+    "crystal": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    },
+    "diamond": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    },
+    "gold": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    },
+    "iron": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    },
+    "obsidian": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    },
+    "silver": {
+      "displayIf": "showConfig",
+      "collapsible": true
+    }
+  }
+}

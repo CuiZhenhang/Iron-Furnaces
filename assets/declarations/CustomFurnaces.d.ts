@@ -38,11 +38,12 @@ declare namespace CustomFurnaces {
         [furnaceId: number]: FurnaceDescriptor;
     };
     export function getFurnaceData(furnaceId: number): FurnaceDescriptor;
-    export function createFurnaceInterface(furnaceId: number, descriptor: FurnaceDescriptor, storageDescriptor?: StorageDescriptor): void;
+    export function createFurnaceInterface(furnaceId: number, descriptor: FurnaceDescriptor, storageDescriptor?: StorageDescriptor): StorageDescriptor;
     export function registerTileEntity(furnaceId: number, customPrototype: TileEntity.TileEntityPrototype & ExtraFurnaceTileEntityPrototype): void
     export function getRecipeResult(tileEntity: TileEntity, id: number, data: number): ItemInstance;
     export function getBurnDuration(tileEntity: TileEntity, id: number, data: number): number
     export function process(tileEntity: TileEntity, progress: number | {succeed: number, fail: number}, burn?: number): number;
+    export function processHighSpeed(tileEntity: TileEntity, progress: number | {succeed: number, fail: number}, burn?: number): number;
     export function decreaseBurning(tileEntity: TileEntity, value?: number): number;
     export function updateProgress(tileEntity: TileEntity, value: number): void;
     export function getTileEntityData(tileEntity: TileEntity): FurnaceTileEntityData

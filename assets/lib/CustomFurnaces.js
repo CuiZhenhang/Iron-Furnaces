@@ -1,5 +1,4 @@
 /// <reference path='../declarations/core-engine.d.ts'/>
-/// <reference path='../declarations/StorageInterface.d.ts'/>
 /// <reference path='../declarations/CustomFurnaces.d.ts'/>
 
 // Copyright (c) 2022 CuiZhenhang (github.com/CuiZhenhang)
@@ -8,11 +7,8 @@ LIBRARY({
     name: 'CustomFurnaces',
     version: 1, // alpha
     api: 'CoreEngine',
-    shared: true,
-    dependencies: ['StorageInterface']
+    shared: true
 })
-
-IMPORT('StorageInterface')
 
 /** @type { CustomFurnaces } */
 let CustomFurnaces = {
@@ -91,9 +87,6 @@ let CustomFurnaces = {
             })
             this.__invalidateData()
         },
-        tick () {
-            StorageInterface.checkHoppers(this)
-        },
         destroyBlock (coords, player) {
             if (this.data.__storedXP > 0) this.__dropXP()
         },
@@ -107,6 +100,11 @@ let CustomFurnaces = {
                 })
                 if (typeof this.renderModel === 'function') {
                     this.renderModel(Boolean(this.networkData.getBoolean('__active')))
+                }
+            },
+            unload () {
+                if (typeof this.renderModel === 'function') {
+                    this.renderModel(false)
                 }
             }
         }
@@ -157,7 +155,7 @@ let CustomFurnaces = {
                 }
             }
         })
-        StorageInterface.createInterface(furnaceId, storageDescriptor)
+        return storageDescriptor
     },
     registerTileEntity (furnaceId, customPrototype) {
         this.unionObject(customPrototype, this.tileEntityPrototype)
@@ -198,8 +196,8 @@ let CustomFurnaces = {
     process (tileEntity, progress, burn) {
         if (typeof progress === 'number') progress = { succeed: progress, fail: -2 * progress }
         if (typeof burn === 'undefined') burn = progress.succeed
-        if (progress.succeed < 0) progress.succeed = 0
-        if (progress.fail > 0) progress.fail = 0
+        if (progress.succeed < 0) progress.succeed *= -1
+        if (progress.fail > 0) progress.fail *= -1
         /** @type { FurnaceDescriptor } */
         let furnaceData = tileEntity.__cache.data
         /** @type { ItemContainer } */
@@ -260,8 +258,8 @@ let CustomFurnaces = {
         }
         let ret = 0
         if (slotSucc) {
-            let burned = this.decreaseBurning(tileEntity, burn)
-            ret = Math.min(burn ? burned / burn : 1, 1)
+            if (burn > 0) ret = Math.min(this.decreaseBurning(tileEntity, burn) / burn, 1)
+            else ret = 1
             tileEntity.data.__isActive = ret > 0
             if (ret > 0) this.updateProgress(tileEntity, progress.succeed * ret)
             else if (tileEntity.data.__progress > 0) this.updateProgress(tileEntity, progress.fail)
@@ -276,6 +274,24 @@ let CustomFurnaces = {
         }
         tileEntity.container.sendChanges()
         return ret
+    },
+    processHighSpeed (tileEntity, progress, burn) {
+        if (typeof progress === 'number') progress = { succeed: progress, fail: -2 * progress }
+        if (typeof burn === 'undefined') burn = progress.succeed
+        if (progress.succeed < 0) progress.succeed = 0
+        if (progress.fail > 0) progress.fail = 0
+        if (progress.succeed <= this.fullProgress) return this.process(tileEntity, progress, burn)
+        let burned = 0
+        for (let succeed = progress.succeed; succeed > 0; succeed -= this.fullProgress) {
+            let per = (succeed % this.fullProgress) / progress.succeed
+            let ret = this.process(tileEntity, {
+                succeed: progress.succeed * per,
+                fail: progress.fail * per
+            }, burn * per)
+            if (ret == 0) break
+            burned += burn * per
+        }
+        return burned / burn
     },
     decreaseBurning (tileEntity, value) {
         if (typeof value === 'undefined' || value < 0) value = 1

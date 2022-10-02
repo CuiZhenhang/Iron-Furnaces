@@ -11,8 +11,8 @@ createFurnace({
     nameId: 'ifSilverFurnace',
     name: 'Silver Furnace',
     texture: {
-        top: ['if_silver_furnace_top', 0],
-        bottom: ['if_silver_furnace_bottom', 0],
+        top: ['if_silver_furnace_side', 0],
+        bottom: ['if_silver_furnace_side', 0],
         side: ['if_silver_furnace_side', 0],
         frontOff: ['if_silver_furnace_front_off', 0],
         frontOn: ['if_silver_furnace_front_on', 0]
@@ -27,7 +27,7 @@ createFurnace({
     customPrototype: {
         tick() {
             StorageInterface.checkHoppers(this)
-            CustomFurnaces.process(this, {
+            CustomFurnaces.processHighSpeed(this, {
                 succeed: FurnaceDesc.silver.succeed,
                 fail: FurnaceDesc.silver.fail
             }, FurnaceDesc.silver.burn)

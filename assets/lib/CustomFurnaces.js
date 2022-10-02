@@ -5,7 +5,7 @@
 
 LIBRARY({
     name: 'CustomFurnaces',
-    version: 1, // alpha
+    version: 1,
     api: 'CoreEngine',
     shared: true
 })

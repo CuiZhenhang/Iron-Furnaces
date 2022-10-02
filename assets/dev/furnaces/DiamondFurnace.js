@@ -11,8 +11,8 @@ createFurnace({
     nameId: 'ifDiamondFurnace',
     name: 'Diamond Furnace',
     texture: {
-        top: ['if_diamond_furnace_top', 0],
-        bottom: ['if_diamond_furnace_bottom', 0],
+        top: ['if_diamond_furnace_side', 0],
+        bottom: ['if_diamond_furnace_side', 0],
         side: ['if_diamond_furnace_side', 0],
         frontOff: ['if_diamond_furnace_front_off', 0],
         frontOn: ['if_diamond_furnace_front_on', 0]
@@ -27,7 +27,7 @@ createFurnace({
     customPrototype: {
         tick() {
             StorageInterface.checkHoppers(this)
-            CustomFurnaces.process(this, {
+            CustomFurnaces.processHighSpeed(this, {
                 succeed: FurnaceDesc.diamond.succeed,
                 fail: FurnaceDesc.diamond.fail
             }, FurnaceDesc.diamond.burn)

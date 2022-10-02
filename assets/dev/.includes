@@ -9,4 +9,5 @@ furnaces/DiamondFurnace.js
 furnaces/CrystalFurnace.js
 furnaces/ObsidianFurnace.js
 recipes.js
+other.js
 share.js

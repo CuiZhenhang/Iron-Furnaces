@@ -1,5 +1,6 @@
 /// <reference path='./header.js'/>
 
+Translation.addTranslation('Furnace Upgrades', { zh_CN: '熔炉升级' })
 Translation.addTranslation('Stone to Copper Furnace Upgrade', { zh_CN: '熔炉升级：石>铜' })
 Translation.addTranslation('Stone to Iron Furnace Upgrade', { zh_CN: '熔炉升级：石>铁' })
 Translation.addTranslation('Copper to Iron Furnace Upgrade', { zh_CN: '熔炉升级：铜>铁' })
@@ -9,6 +10,7 @@ Translation.addTranslation('Silver to Gold Furnace Upgrade', { zh_CN: '熔炉升
 Translation.addTranslation('Gold to Diamond Furnace Upgrade', { zh_CN: '熔炉升级：金>钻石' })
 Translation.addTranslation('Diamond to Crystal Furnace Upgrade', { zh_CN: '熔炉升级：钻石>水晶' })
 Translation.addTranslation('Diamond to Obsidian Furnace Upgrade', { zh_CN: '熔炉升级：钻石>黑曜石' })
+Translation.addTranslation('Furnaces', { zh_CN: '熔炉' })
 Translation.addTranslation('Copper Furnace', { zh_CN: '铜熔炉' })
 Translation.addTranslation('Iron Furnace', { zh_CN: '铁熔炉' })
 Translation.addTranslation('Silver Furnace', { zh_CN: '银熔炉' })

@@ -1,4 +1,4 @@
-/// <reference path='./recipes.js'/>
+/// <reference path='./other.js'/>
 
 ModAPI.registerAPI('IronFurnacesAPI', {
     version: (function getModVersion () {

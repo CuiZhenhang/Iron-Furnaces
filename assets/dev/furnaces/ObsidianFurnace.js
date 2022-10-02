@@ -11,8 +11,8 @@ createFurnace({
     nameId: 'ifObsidianFurnace',
     name: 'Obsidian Furnace',
     texture: {
-        top: ['if_obsidian_furnace_top', 0],
-        bottom: ['if_obsidian_furnace_bottom', 0],
+        top: ['if_obsidian_furnace_side', 0],
+        bottom: ['if_obsidian_furnace_side', 0],
         side: ['if_obsidian_furnace_side', 0],
         frontOff: ['if_obsidian_furnace_front_off', 0],
         frontOn: ['if_obsidian_furnace_front_on', 0]
@@ -30,7 +30,7 @@ createFurnace({
     customPrototype: {
         tick() {
             StorageInterface.checkHoppers(this)
-            CustomFurnaces.process(this, {
+            CustomFurnaces.processHighSpeed(this, {
                 succeed: FurnaceDesc.obsidian.succeed,
                 fail: FurnaceDesc.obsidian.fail
             }, FurnaceDesc.obsidian.burn)

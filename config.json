@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "noRecipeOfUpgrades": false,
   "showConfig": true,
   "copper": {
     "input": 1,

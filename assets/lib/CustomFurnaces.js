@@ -5,7 +5,7 @@
 
 LIBRARY({
     name: 'CustomFurnaces',
-    version: 1,
+    version: 2,
     api: 'CoreEngine',
     shared: true
 })
@@ -13,7 +13,7 @@ LIBRARY({
 /** @type { CustomFurnaces } */
 let CustomFurnaces = {
     eps: 1e-6,
-    cacheSize: 32,
+    cacheSize: 64,
     fullProgress: 200,
     averageXP: 0.3,
     slotData: {
@@ -53,6 +53,8 @@ let CustomFurnaces = {
             data: null
         },
         __invalidateData () {
+            if (!this.__cache.data) this.__cache.data = CustomFurnaces.getFurnaceData(this.blockID)
+            if (!this.__cache.data) return
             if (this.data.__isActive !== Boolean(this.networkData.getBoolean('__active'))) {
                 this.networkData.putBoolean('__active', this.data.__isActive)
                 this.networkData.sendChanges()
@@ -68,7 +70,7 @@ let CustomFurnaces = {
             }
         },
         init () {
-            this.__cache.data = CustomFurnaces.getFurnaceData(this.blockID)
+            if (!this.__cache.data) this.__cache.data = CustomFurnaces.getFurnaceData(this.blockID)
             if (!this.__cache.data) return
             let that = this
             this.__cache.data.fuelSlot && this.__cache.data.fuelSlot.forEach(function (name) {
@@ -200,6 +202,7 @@ let CustomFurnaces = {
         if (progress.fail > 0) progress.fail *= -1
         /** @type { FurnaceDescriptor } */
         let furnaceData = tileEntity.__cache.data
+        if (!furnaceData) return
         /** @type { ItemContainer } */
         let container = tileEntity.container
         if (tileEntity.__cache.inputIndex >= 0) {
@@ -298,6 +301,7 @@ let CustomFurnaces = {
         let tileData = tileEntity.data
         /** @type { FurnaceDescriptor } */
         let furnaceData = tileEntity.__cache.data
+        if (!furnaceData) return
         let newBurning = tileData.__burning - value
         if (newBurning < 0) {
             if (furnaceData.fuelSlot) {
@@ -346,6 +350,7 @@ let CustomFurnaces = {
         let tileData = tileEntity.data
         /** @type { FurnaceDescriptor } */
         let furnaceData = tileEntity.__cache.data
+        if (!furnaceData) return
         let newProgress = tileData.__progress + value
         if (newProgress < 0) newProgress = 0
         else if (newProgress + this.eps >= this.fullProgress) {

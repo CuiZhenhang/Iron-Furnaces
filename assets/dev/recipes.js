@@ -1,6 +1,8 @@
 /// <reference path='./upgrades.js'/>
 
 Callback.addCallback('PreLoaded', function () {
+    if (__config__.getBool('noRecipeOfUpgrades')) return;
+    
     if (ItemID.ingotCopper) {
         Recipes.addShaped({id: ItemID.ifStoneCopperUpgrade, count: 1, data: 0}, [
             'xxx',

@@ -1,11 +1,7 @@
 /// <reference path='./other.js'/>
 
 ModAPI.registerAPI('IronFurnacesAPI', {
-    version: (function getModVersion () {
-        let json = FileTools.ReadJSON(__dir__ + 'mod.info')
-        if (typeof json !== 'object') return 'unknow'
-        return String(json.version || 'unknow')
-    })(),
+    version: __mod__.getVersion(),
     createFurnaceWindow: createFurnaceWindow,
     createFurnace: createFurnace,
     upgradeFurnace: upgradeFurnace,
